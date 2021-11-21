@@ -7,24 +7,51 @@ import StreamerAvatar from "@components/StreamerAvatar";
 import StreamerSchedule from "@components/StreamerSchedule";
 import LatestStream from "@components/LatestStream";
 import Twitch from "@components/Svg/Twitch";
-
-function transformEmotes(emotes) {
-  return emotes?.length > 0
-    ? emotes.map((emote) => {
-        return {
-          ...emote,
-          imageUrl: `https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/3.0`,
-        };
-      })
-    : [];
-}
+import { transformEmotes } from "@utils/Tools";
+import { IMG_WIDTH, IMG_HEIGHT, generateImageUrlForStreamer } from "@utils/OpenGraph";
+import { getRandomEntry } from "@whitep4nth3r/get-random-entry";
 
 export default function Streamer({ streamer, hasBanner }) {
   const transformedEmotes = transformEmotes(streamer.emotes);
+  const plainEmoteUrlArray = transformedEmotes.map((emote) => emote.imageUrl);
+
+  const imageUrl = generateImageUrlForStreamer({
+    streamerName: streamer.display_name,
+    avatarUrl: streamer.profile_image_url,
+    emoteUrl: plainEmoteUrlArray.length ? getRandomEntry(plainEmoteUrlArray) : null,
+  });
+
+  const ogUrl = `https://theclaw.team/${streamer.login}`;
+  const title = `${streamer.display_name} on The Claw stream team`;
+  const description = streamer.description;
 
   return (
     <>
-      <NextSeo title={streamer.display_name} description={streamer.description} />
+      <NextSeo
+        title={streamer.display_name}
+        description={streamer.description}
+        openGraph={{
+          title,
+          description,
+          url: ogUrl,
+          site_name: "The Claw Stream Team",
+          type: "website",
+          locale: "en_US",
+          images: [
+            {
+              url: imageUrl,
+              width: IMG_WIDTH,
+              height: IMG_HEIGHT,
+              alt: `Profile card for ${streamer.display_name} on The Claw stream team`,
+            },
+          ],
+        }}
+        twitter={{
+          handle: "@whitep4nth3r",
+          site: "https://whitep4nth3r.com",
+          cardType: "summary_large_image",
+        }}
+      />
 
       <Layout>
         <Link href="/">

@@ -1,13 +1,17 @@
 import { NextSeo } from "next-seo";
 import ContentfulData from "@utils/ContentfulData";
-import TeamData from "@utils/TeamData";
 import Layout from "@components/Layout";
-import Streamers from "@components/Streamers";
-import RichText from "@components/RichText";
 import PageTitle from "@components/PageTitle";
+import Awards from "@components/Awards";
 import { IMG_WIDTH, IMG_HEIGHT, generateImageUrlForPage } from "@utils/OpenGraph";
 
-export default function Home({ streamers, page }) {
+export default function Awards2021({ awardsData }) {
+  const page = {
+    title: "The Claw Community Awards 2021",
+    description:
+      "Nominated and voted for by the community — your favourite streamers and community members have been recognised for 2021!",
+  };
+
   const imageUrl = generateImageUrlForPage({
     pageTitle: page.title,
   });
@@ -20,7 +24,7 @@ export default function Home({ streamers, page }) {
         openGraph={{
           title: page.title,
           description: page.metaDescription,
-          url: "https://theclaw.team/",
+          url: "https://theclaw.team/awards/2021",
           site_name: "The Claw Stream Team",
           type: "website",
           locale: "en_US",
@@ -29,7 +33,7 @@ export default function Home({ streamers, page }) {
               url: imageUrl,
               width: IMG_WIDTH,
               height: IMG_HEIGHT,
-              alt: `Open Graph Image for ${page.title} on theclaw.team`,
+              alt: `Open Graph Image for the ${page.title} on theclaw.team`,
             },
           ],
         }}
@@ -41,23 +45,19 @@ export default function Home({ streamers, page }) {
       />
 
       <Layout>
-        <PageTitle title={page.title} />
-        <RichText content={page.content} />
-        <Streamers streamers={streamers} />
+        <PageTitle title="The Claw Community Awards 2021" />
+        <Awards awardsData={awardsData} />
       </Layout>
     </>
   );
 }
 
 export async function getStaticProps() {
-  const streamers = await TeamData.getStreamers();
-  const page = await ContentfulData.getPageContent("home");
+  const awardsData = await ContentfulData.getAwardNominationsByYear("2021");
 
   return {
     props: {
-      streamers,
-      page,
+      awardsData,
     },
-    revalidate: 1,
   };
 }
